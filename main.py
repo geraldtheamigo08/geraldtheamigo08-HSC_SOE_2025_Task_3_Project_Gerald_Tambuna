@@ -1,9 +1,18 @@
+
 import customtkinter as ctk
 import sqlite3
 import hashlib
+from PIL import Image
 
-ctk.set_appearance_mode("Light")
-ctk.set_default_color_theme("themes.json")
+#---define images section---
+home_icon = Image.open("icons/home_1946488.png") #home icon image
+app_logo = Image.open("images/braintain_logo.png") #app
+pomodoro_icon =Image.open("icons/stopwatch_icon.png")
+flash_cards_icon=Image.open("icons/flash_cards_icon.png")
+
+ctk.set_appearance_mode("Light") #sets the appearance mode
+ctk.set_default_color_theme("themes/purple.json") #sets the default colour theme from purple.json file
+
 
 # Initialize DB
 conn = sqlite3.connect("notes_app.db") #connect sqlite to .db file
@@ -14,7 +23,10 @@ c.execute('''CREATE TABLE IF NOT EXISTS users (
                 email TEXT UNIQUE,
                 first_name TEXT,
                 password TEXT)''')
+
 #Creates notes table, storing user info and the notes they types
+
+
 c.execute('''CREATE TABLE IF NOT EXISTS notes (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER,
@@ -23,14 +35,15 @@ c.execute('''CREATE TABLE IF NOT EXISTS notes (
 conn.commit()
 
 # Helper functions, hashing algorithm sha256 converts password into ciphertext, hiding the password in notes_app.db
-def hash_password(password):
+def hash_password(password): #hashing function: encrypts passwords from plaintext to encoded set of characters
     return hashlib.sha256(password.encode()).hexdigest()
 
-class App(ctk.CTk):
+class App(ctk.CTk): #class for app
     def __init__(self):
         super().__init__()
-        self.title("Notes App")
-        self.geometry("500x500")
+        self.title("Braintain")
+        self.after(100, lambda: self.state('zoomed'))
+
         self.current_user = None
         self.build_login()
         self.sidebar = None
@@ -39,6 +52,7 @@ class App(ctk.CTk):
         self.timer_seconds = 0
         self.timer_paused = False
         self.timer_id = None
+        self.app_font = ctk.CTkFont(family="Inter", size=20, weight="bold")
 
 
     def clear_widgets(self):
@@ -52,14 +66,17 @@ class App(ctk.CTk):
       self.clear_widgets()
     
       # Sidebar menu
-      self.sidebar = ctk.CTkFrame(self, width=120)
+      self.sidebar = ctk.CTkFrame(self, width=120, fg_color="white")
       self.sidebar.pack(side="left", fill="y")
+      
 
       ctk.CTkLabel(self.sidebar, text="Menu", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(10, 5))
 
-      ctk.CTkButton(self.sidebar, text="Home", command=self.build_home).pack(pady=5)
-      ctk.CTkButton(self.sidebar, text="Pomodoro", command=self.build_pomodoro).pack(pady=5)
-      ctk.CTkButton(self.sidebar, text="Logout", command=self.logout).pack(pady=5)
+      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=home_icon),text="Home", command=self.home, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=pomodoro_icon),text="Pomodoro", command=self.build_pomodoro, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=flash_cards_icon),text="Flashcards", command=self.build_flashcards, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
 
       # Content frame
       self.content_frame = ctk.CTkFrame(self)
@@ -69,30 +86,100 @@ class App(ctk.CTk):
     
     #login page function
     def build_login(self):
-        self.clear_widgets()
+      self.clear_widgets()
 
-        
-        container = ctk.CTkFrame(self)#Creates a frame that will hold all login widgets
-        container.place(relx=0.5, rely=0.5, anchor="center")  # center the frame in the window
+    # Fullscreen background
+      background = ctk.CTkFrame(self, fg_color="#4B0082", corner_radius=0)
+      background.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-        self.label = ctk.CTkLabel(container, text="Login", font=ctk.CTkFont(size=20, weight="bold"))
-        self.label.pack(pady=50, padx=150)
+    # --- Left side: Full-height container ---
+      container = ctk.CTkFrame(self, fg_color="white", corner_radius=0)
+      container.place(relx=0, rely=0, relwidth=0.5, relheight=1)
+      #jds
 
-        self.email_entry = ctk.CTkEntry(container, placeholder_text="Email", width=300, height=40) #email entry box
-        self.email_entry.pack(pady=10)
+    # Inner frame centered inside the left container
+      content_frame = ctk.CTkFrame(container, fg_color="transparent", border_color="#d0d0d0", border_width=0.4, corner_radius=10)
+      content_frame.place(relx=0.4, rely=0.5, anchor="center")
+      content_frame.configure(fg_color="#fafafa")
+      
+      header_frame= ctk.CTkFrame(content_frame, fg_color="#fafafa")
+      header_frame.pack(anchor="center", padx=20, pady=20)
 
-        self.password_entry = ctk.CTkEntry(container, placeholder_text="Password", show="*", width=300, height=40) #password entry box
-        self.password_entry.pack(pady=5)
+      innercont_frame= ctk.CTkFrame(content_frame,fg_color="#fafafa")
+      innercont_frame.pack(anchor="center", padx=20, pady=20)
+      
+      #Logo Image
+      app_logo = Image.open("images/braintain_logo.png") #app
+      self.logo = ctk.CTkImage(light_image=app_logo, size=(120, 120))
+      
+      logo_label = ctk.CTkLabel(header_frame, image=self.logo, text="")
+      logo_label.pack(side="left", padx=(0, 10))  # Logo on the left
 
-        self.login_btn = ctk.CTkButton(container, text="Login", command=self.login, width=300, height=40)
-        self.login_btn.pack(pady=10)
+      self.app_title = ctk.CTkLabel(header_frame, text = "Braintrain", font=ctk.CTkFont(family="Huninn", size=55, weight="bold"))
+      #self.app_title(anchor="center", padx=10, pady=(0,20))
+      self.app_title.pack(side="left")
 
-        self.signup_link = ctk.CTkButton(container, text="Sign Up", command=self.build_signup, width=300, height=40)
-        self.signup_link.pack(pady=5)
+       
+      #welcome widgets
+      self.label = ctk.CTkLabel(innercont_frame, text="Login", font=ctk.CTkFont(family="Calibri", size=40, weight="normal"))
+      self.label.pack(anchor="center", padx=10, pady=(0, 20))
 
-        self.flash_label = ctk.CTkLabel(container, text="")
-        self.flash_label.pack()
+      self.greeting = ctk.CTkLabel(innercont_frame, text="Hi there, 👋 Welcome!", font=ctk.CTkFont(family="Calibri", size=18))
+      self.greeting.pack(anchor="center", padx=10, pady=(0, 20))
+      
+      #email widgets
+      self.email_label= ctk.CTkLabel(innercont_frame,text="Email", font=ctk.CTkFont(family="Calibri", size=16, weight="bold"), text_color="black",)
+      self.email_label.pack(pady=0, anchor="w")
 
+      self.email_entry = ctk.CTkEntry(innercont_frame, placeholder_text="", width=400, height=50, fg_color="#F6E9FF", border_color="black", border_width=0.5, font=ctk.CTkFont(family="Calibri", size=16))
+      self.email_entry.pack(pady=10)
+      
+      #password widgets
+      self.password_label= ctk.CTkLabel(innercont_frame,text="Password", font=ctk.CTkFont(family="Calibri", size=16, weight="bold"), text_color="black")
+      self.password_label.pack(pady=0, anchor="w")
+      
+
+      self.password_entry = ctk.CTkEntry(innercont_frame, placeholder_text="", show="*", width=400, height=50, fg_color="#F6E9FF", border_color="black", border_width=0.5, font=ctk.CTkFont(family="Calibri", size=16))
+      self.password_entry.pack(pady=5)
+
+      self.login_btn = ctk.CTkButton(innercont_frame, text="Login", command=self.login, width=400, height=50, fg_color="#4B0082", text_color="white", font=ctk.CTkFont(family="Calibri", size=16), hover_color="#ff1493")
+      self.login_btn.pack(pady=15)
+
+      self.signup_link = ctk.CTkButton(innercont_frame, text="Don't have an account? Sign up", command=self.build_signup, width=400, height=50, fg_color="transparent", text_color="#4B0082", font=ctk.CTkFont(family="Calibri", size=16, underline=True), hover_color="white")
+      self.signup_link.pack(pady=5)
+
+      self.flash_label = ctk.CTkLabel(innercont_frame, text="")
+      self.flash_label.pack(pady=(10, 0))
+
+    # --- Right panel (unchanged) --- 
+      right_panel = ctk.CTkFrame(self, fg_color="#4B0082", corner_radius=0)
+      right_panel.place(relx=0.4, rely=0, relwidth=0.6, relheight=1)
+
+      gradient_bg = Image.open("images/braintain_gradient_bg.png")
+      self.bg = ctk.CTkImage(light_image=gradient_bg, size= (800, 600))
+
+      bg_label = ctk.CTkLabel(right_panel, image=self.bg, text="")
+      bg_label.pack()  # Logo on the left
+      
+
+    def build_flashcards(self):
+        for widget in self.content_frame.winfo_children():
+          widget.destroy()
+
+        ctk.CTkLabel(self.content_frame, text=f"Welcome, {self.current_user[2]}", font=ctk.CTkFont(size=18)).pack(pady=5)
+
+        self.note_entry = ctk.CTkTextbox(self.content_frame, height=100, width=400)
+        self.note_entry.pack(pady=10)
+
+        self.add_btn = ctk.CTkButton(self.content_frame, text="Add Note", command=self.add_note)
+        self.add_btn.pack(pady=5)
+
+        self.notes_frame = ctk.CTkFrame(self.content_frame)
+        self.notes_frame.pack(pady=10, fill="both", expand=True)
+      
+      
+     
+      
     #signup page function
     def build_signup(self): 
         self.clear_widgets()
@@ -119,7 +206,8 @@ class App(ctk.CTk):
         self.flash_label.pack()
     
     #homepage function
-    def build_home(self):
+    def build_notes(self):
+      
       for widget in self.content_frame.winfo_children():
         widget.destroy()
 
@@ -136,7 +224,29 @@ class App(ctk.CTk):
 
       self.load_notes()
 
+    def home(self):
 
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+        ctk.CTkLabel(self.content_frame, text=f"Welcome, {self.current_user[2]}", font=ctk.CTkFont(size=18)).pack(pady=5)
+
+        
+    
+ #login event function
+    def login(self):
+        email = self.email_entry.get()
+        password = self.password_entry.get()
+        c.execute("SELECT * FROM users WHERE email=?", (email,))
+        user = c.fetchone()
+      
+        if user and user[3] == hash_password(password):  #sends user to homepage when login credentials are correct
+          self.current_user = user
+          self.build_logged_in_layout()
+          self.home()
+        else: #if credentials are invalid, this message is flashed
+          self.flash("Invalid login credentials") 
+    
 
     #pomodoro timer   
     def build_pomodoro(self):
@@ -149,7 +259,7 @@ class App(ctk.CTk):
 
         ctk.CTkLabel(center_frame, text="Pomodoro Timer", font=ctk.CTkFont(size=18)).pack(pady=10)
 
-        self.timer_label = ctk.CTkLabel(center_frame, text="25:00", font=ctk.CTkFont(size=36))
+        self.timer_label = ctk.CTkLabel(center_frame, text="25:00", font=ctk.CTkFont(size=36), width=400)
         self.timer_label.pack(pady=20)
 
         self.start_button = ctk.CTkButton(center_frame, text="Start", command=self.start_timer)
@@ -212,21 +322,9 @@ class App(ctk.CTk):
 
     def flash(self, msg, color="red"):
         self.flash_label.configure(text=msg, text_color=color)
-    #login page function
-    def login(self):
-        email = self.email_entry.get()
-        password = self.password_entry.get()
-        c.execute("SELECT * FROM users WHERE email=?", (email,))
-        user = c.fetchone()
-      
-        if user and user[3] == hash_password(password):  #sends user to homepage when login credentials are correct
-          self.current_user = user
-          self.build_logged_in_layout()
-          self.build_home()
-        else: #if credentials are invalid, this message is flashed
-          self.flash("Invalid login credentials") 
-    
-    #signup page function
+
+   
+    #signing up event function
     def signup(self):
         email = self.email_entry.get()
         name = self.name_entry.get()
@@ -236,9 +334,16 @@ class App(ctk.CTk):
         if p1 != p2: #if passwords match, signup
             self.flash("Passwords do not match")
             return
-        if len(p1) < 7:#if password is less than 7 characters, the user is not logged in and this message is flashed
+        
+        elif len(p1) < 7:#if password is less than 7 characters, the user is not logged in and this message is flashed
             self.flash("Password must be 7+ characters")
             return
+        
+        elif "@" not in p1 and "@" not in p2:
+            self.flash("Invalid email: missing '@' symbol")
+            
+        elif not email.endswith(".com"):
+            self.flash("Email must have a valid domain")
 
         try:
             c.execute("INSERT INTO users (email, first_name, password) VALUES (?, ?, ?)",
@@ -248,7 +353,7 @@ class App(ctk.CTk):
         except sqlite3.IntegrityError:
             self.flash("Email already exists")
    
-    #add note function
+    #add note event function
     def add_note(self):
         data = self.note_entry.get("1.0", "end").strip()
         if len(data) < 1:
