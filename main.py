@@ -95,7 +95,7 @@ class App(ctk.CTk): #class for app
     # --- Left side: Full-height container ---
       container = ctk.CTkFrame(self, fg_color="white", corner_radius=0)
       container.place(relx=0, rely=0, relwidth=0.5, relheight=1)
-      #jds
+      
 
     # Inner frame centered inside the left container
       content_frame = ctk.CTkFrame(container, fg_color="transparent", border_color="#d0d0d0", border_width=0.4, corner_radius=10)
