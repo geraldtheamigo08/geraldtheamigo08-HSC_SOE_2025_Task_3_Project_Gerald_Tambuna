@@ -77,6 +77,7 @@ class App(ctk.CTk): #class for app
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=flash_cards_icon),text="Flashcards", command=self.build_flashcards, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, text ="Tasks", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
 
       # Content frame
       self.content_frame = ctk.CTkFrame(self)
