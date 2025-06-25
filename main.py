@@ -13,7 +13,7 @@ flash_cards_icon=Image.open("icons/flash_cards_icon.png")
 ctk.set_appearance_mode("Light") #sets the appearance mode
 ctk.set_default_color_theme("themes/purple.json") #sets the default colour theme from purple.json file
 
-sbkdbkjsab
+#adding full fules
 # Initialize DB
 conn = sqlite3.connect("notes_app.db") #connect sqlite to .db file
 c = conn.cursor()
