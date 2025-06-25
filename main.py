@@ -3,7 +3,7 @@ import customtkinter as ctk
 import sqlite3
 import hashlib
 from PIL import Image
-
+#ajsbdibasjkdsabdj
 #---define images section---
 home_icon = Image.open("icons/home_1946488.png") #home icon image
 app_logo = Image.open("images/braintain_logo.png") #app
