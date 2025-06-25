@@ -25,7 +25,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS users (
                 password TEXT)''')
 
 #Creates notes table, storing user info and the notes they types
-
+knknskd
 
 c.execute('''CREATE TABLE IF NOT EXISTS notes (
                 id INTEGER PRIMARY KEY,
