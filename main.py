@@ -25,7 +25,16 @@ c.execute('''CREATE TABLE IF NOT EXISTS users (
                 password TEXT)''')
 
 #Creates notes table, storing user info and the notes they types
-knknskd
+
+c.execute('''CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY,
+                user_id INTEGER,
+                name TEXT,
+                subject TEXT,
+                due_date TEXT,
+                details TEXT,
+                FOREIGN KEY(user_id) REFERENCES users(id))''')
+conn.commit()
 
 c.execute('''CREATE TABLE IF NOT EXISTS notes (
                 id INTEGER PRIMARY KEY,
@@ -77,7 +86,8 @@ class App(ctk.CTk): #class for app
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=flash_cards_icon),text="Flashcards", command=self.build_flashcards, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, text ="Tasks", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, text="Tasks", command=self.build_tasks_page, fg_color="white", text_color="black").pack(pady=5)
+
 
       # Content frame
       self.content_frame = ctk.CTkFrame(self)
@@ -386,6 +396,104 @@ class App(ctk.CTk): #class for app
       self.current_user = None
       self.clear_widgets()
       self.build_login()
+
+
+    def build_tasks_page(self):
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+        top_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+        top_frame.pack(fill="x", padx=20, pady=10)
+
+        # New Task button
+        new_task_btn = ctk.CTkButton(top_frame, text="New Task", fg_color="#4B0082", text_color="white",
+                                    command=self.open_new_task_popup)
+        new_task_btn.pack(side="right")
+
+        # Grid for tasks
+        grid_frame = ctk.CTkFrame(self.content_frame)
+        grid_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+        # Fetch tasks from DB
+        c.execute("SELECT id, name, subject, due_date FROM tasks WHERE user_id=?", (self.current_user[0],))
+        tasks = c.fetchall()
+
+        columns = 3  # Number of boxes per row
+        for index, (task_id, name, subject, due_date) in enumerate(tasks):
+            row = index // columns
+            col = index % columns
+
+            task_frame = ctk.CTkFrame(grid_frame, width=200, height=150, corner_radius=12)
+            task_frame.grid(row=row, column=col, padx=15, pady=15, sticky="nsew")
+
+            ctk.CTkLabel(task_frame, text=f"Name: {name}", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=(10, 2))
+            ctk.CTkLabel(task_frame, text=f"Subject: {subject}").pack()
+            ctk.CTkLabel(task_frame, text=f"Due: {due_date}").pack(pady=(0, 10))
+
+            view_btn = ctk.CTkButton(task_frame, text="View Task", fg_color="#4B0082", text_color="white",
+                                    command=lambda tid=task_id: self.show_task_details(tid))
+            view_btn.pack(pady=(5, 10))
+
+    def open_new_task_popup(self):
+        popup = ctk.CTkToplevel(self)
+        popup.title("New Task")
+        popup.geometry("400x400")
+
+        ctk.CTkLabel(popup, text="Task Name").pack(pady=5)
+        name_entry = ctk.CTkEntry(popup)
+        name_entry.pack(pady=5)
+
+        ctk.CTkLabel(popup, text="Subject").pack(pady=5)
+        subject_entry = ctk.CTkEntry(popup)
+        subject_entry.pack(pady=5)
+
+        ctk.CTkLabel(popup, text="Due Date (e.g., 2025-07-05)").pack(pady=5)
+        due_date_entry = ctk.CTkEntry(popup)
+        due_date_entry.pack(pady=5)
+
+        ctk.CTkLabel(popup, text="Details").pack(pady=5)
+        details_entry = ctk.CTkTextbox(popup, height=100)
+        details_entry.pack(pady=5)
+
+        def save_task():
+            name = name_entry.get()
+            subject = subject_entry.get()
+            due_date = due_date_entry.get()
+            details = details_entry.get("1.0", "end").strip()
+
+            if name and subject and due_date:
+                c.execute("INSERT INTO tasks (user_id, name, subject, due_date, details) VALUES (?, ?, ?, ?, ?)",
+                        (self.current_user[0], name, subject, due_date, details))
+                conn.commit()
+                popup.destroy()
+                self.build_tasks_page()
+
+        ctk.CTkButton(popup, text="Save Task", fg_color="#4B0082", text_color="white", command=save_task).pack(pady=10)
+    
+    def show_task_details(self, task_id):
+        details_popup = ctk.CTkToplevel(self)
+        details_popup.title("Task Details")
+        details_popup.geometry("400x300")
+
+        c.execute("SELECT name, subject, due_date, details FROM tasks WHERE id=? AND user_id=?", (task_id, self.current_user[0]))
+        task = c.fetchone()
+
+        if task:
+            name, subject, due_date, details = task
+            ctk.CTkLabel(details_popup, text=name, font=ctk.CTkFont(size=18, weight="bold")).pack(pady=10)
+            ctk.CTkLabel(details_popup, text=f"Subject: {subject}").pack()
+            ctk.CTkLabel(details_popup, text=f"Due: {due_date}").pack()
+            ctk.CTkLabel(details_popup, text="Details:").pack(pady=(10, 2))
+
+            detail_box = ctk.CTkTextbox(details_popup, height=100)
+            detail_box.insert("1.0", details)
+            detail_box.configure(state="disabled")
+            detail_box.pack(pady=5)
+
+
+
+
+
 
 #runs the app continuouslyu
 if __name__ == "__main__":
