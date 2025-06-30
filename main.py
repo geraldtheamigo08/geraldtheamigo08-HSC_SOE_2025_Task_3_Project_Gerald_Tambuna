@@ -3,10 +3,11 @@ import customtkinter as ctk
 import sqlite3
 import hashlib
 from PIL import Image
-
+from tkcalendar import DateEntry
+import tkinter as tk
 
 #---define images section---
-home_icon = Image.open("icons/home_1946488.png") #home icon image
+home_icon = Image.open("icons/home_icon.png") #home icon image
 app_logo = Image.open("images/braintain_logo.png") #app
 pomodoro_icon =Image.open("icons/stopwatch_icon.png")
 flash_cards_icon=Image.open("icons/flash_cards_icon.png")
@@ -34,6 +35,17 @@ c.execute('''CREATE TABLE IF NOT EXISTS notes (
                 user_id INTEGER,
                 data TEXT,
                 FOREIGN KEY(user_id) REFERENCES users(id))''') #user_id becomes a foreign key in notes
+
+
+
+c.execute('''CREATE TABLE IF NOT EXISTS tasks (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER,
+    name TEXT,
+    subject TEXT,
+    due_date TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+)''')
 conn.commit()
 
 # Helper functions, hashing algorithm sha256 converts password into ciphertext, hiding the password in notes_app.db
@@ -55,6 +67,8 @@ class App(ctk.CTk): #class for app
         self.timer_paused = False
         self.timer_id = None
         self.app_font = ctk.CTkFont(family="Inter", size=20, weight="bold")
+        self.task_list = []  
+
 
 
     def clear_widgets(self):
@@ -77,10 +91,9 @@ class App(ctk.CTk): #class for app
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=home_icon),text="Home", command=self.home, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=pomodoro_icon),text="Pomodoro", command=self.build_pomodoro, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=flash_cards_icon),text="Flashcards", command=self.build_flashcards, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)  
       ctk.CTkButton(self.sidebar, text="Tasks", command=self.build_tasks_page, fg_color="white", text_color="black").pack(pady=5)
-
+      ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
 
       # Content frame
       self.content_frame = ctk.CTkFrame(self)
@@ -224,7 +237,7 @@ class App(ctk.CTk): #class for app
       self.add_btn.pack(pady=5)
 
       self.notes_frame = ctk.CTkFrame(self.content_frame)
-      self.notes_frame.pack(pady=10, fill="both", expand=True)
+      self.notes_frame.pack(pady=50, fill="both", expand=True)
 
       self.load_notes()
 
@@ -392,37 +405,40 @@ class App(ctk.CTk): #class for app
 
     
     def build_tasks_page(self):
-     for widget in self.content_frame.winfo_children():
+      for widget in self.content_frame.winfo_children():
         widget.destroy()
 
-        self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame)
-        self.tasks_frame.pack(fill="both", expand=True, padx=20, pady=20)
+      self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame)
+      self.tasks_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-        task_header = ctk.CTkFrame(self.tasks_frame, fg_color="transparent")
-        task_header.grid(row=0, column=0, columnspan=4, sticky="ew")
-        ctk.CTkButton(task_header, text="Add Subject", command=self.add_subject_popup, fg_color="#4B0082").pack(side="left", padx=10)
-        ctk.CTkButton(task_header, text="New Task", command=self.add_task_popup, fg_color="#4B0082").pack(side="right", padx=10)
+      task_header = ctk.CTkFrame(self.tasks_frame, fg_color="transparent")
+      task_header.grid(row=0, column=0, columnspan=4, sticky="ew")
+      ctk.CTkButton(task_header, text="Add Subject", command=self.add_subject_popup, fg_color="#4B0082").pack(side="left", padx=10)
+      ctk.CTkButton(task_header, text="New Task", command=self.add_task_popup, fg_color="#4B0082").pack(side="right", padx=10)
 
-        self.load_tasks_grid()
+      self.load_tasks_grid()
 
     def load_tasks_grid(self):
         for widget in self.tasks_frame.winfo_children():
             if isinstance(widget, ctk.CTkFrame) and widget != self.tasks_frame.winfo_children()[0]:
                 widget.destroy()
-
+        c.execute("SELECT id, name, subject, due_date FROM tasks WHERE user_id=?", (self.current_user[0],))
+        tasks = c.fetchall()
         if not hasattr(self, 'task_list'):
             self.task_list = []
 
-        for idx, task in enumerate(self.task_list):
+        for idx, task in enumerate(tasks):
+            task_id, name, subject, due_date = task
             frame = ctk.CTkFrame(self.tasks_frame, border_width=1, corner_radius=10)
             frame.grid(row=(idx // 2) + 1, column=idx % 2, padx=10, pady=10, sticky="nsew")
 
-            ctk.CTkLabel(frame, text=f"Name: {task['name']}").pack(anchor="w", padx=10, pady=2)
-            ctk.CTkLabel(frame, text=f"Subject: {task['subject']}").pack(anchor="w", padx=10, pady=2)
-            ctk.CTkLabel(frame, text=f"Due: {task['due_date']}").pack(anchor="w", padx=10, pady=2)
+            ctk.CTkLabel(frame, text=f"Name: {name}").pack(anchor="w", padx=10, pady=2)
+            ctk.CTkLabel(frame, text=f"Subject: {subject}").pack(anchor="w", padx=10, pady=2)
+            ctk.CTkLabel(frame, text=f"Due: {due_date}").pack(anchor="w", padx=10, pady=2)
 
-            ctk.CTkButton(frame, text="View Task", command=lambda t=task: self.view_task_popup(t), fg_color="#4B0082").pack(pady=4)
-            ctk.CTkButton(frame, text="Mark Complete", command=lambda t=task: self.mark_task_complete(t), fg_color="#4B0082").pack(pady=2)
+            ctk.CTkButton(frame, text="View Task", command=lambda n=name, s=subject, d=due_date: self.view_task_popup({'name': n, 'subject': s, 'due_date': d}), fg_color="#4B0082").pack(pady=4)
+
+            ctk.CTkButton(frame, text="Mark Complete", command=lambda tid=task_id: self.mark_task_complete(tid), fg_color="#4B0082").pack(pady=2)
 
     def add_subject_popup(self):
         popup = ctk.CTkToplevel(self)
@@ -457,8 +473,15 @@ class App(ctk.CTk): #class for app
         subject_combobox.pack(pady=5)
 
         ctk.CTkLabel(popup, text="Due Date").pack(pady=5)
-        due_entry = ctk.CTkEntry(popup)
-        due_entry.pack(pady=5)
+
+        # Embed DateEntry inside a tk.Frame so it displays correctly inside a CTk popup
+        calendar_frame = tk.Frame(popup)  # standard tkinter frame
+        calendar_frame.pack(pady=5)
+
+        due_entry = DateEntry(calendar_frame, width=20, background='darkblue', foreground='white',
+                            borderwidth=2, date_pattern='yyyy-mm-dd')
+        due_entry.pack()
+
 
         def save_task():
             new_task = {
@@ -468,8 +491,11 @@ class App(ctk.CTk): #class for app
             }
             if not hasattr(self, 'task_list'):
                 self.task_list = []
-            self.task_list.append(new_task)
+            c.execute("INSERT INTO tasks (user_id, name, subject, due_date) VALUES (?, ?, ?, ?)",
+            (self.current_user[0], name_entry.get(), subject_combobox.get(), due_entry.get()))
+            conn.commit()
             self.load_tasks_grid()
+
             popup.destroy()
 
         ctk.CTkButton(popup, text="Create Task", command=save_task, fg_color="#4B0082").pack(pady=10)
@@ -485,7 +511,8 @@ class App(ctk.CTk): #class for app
         ctk.CTkLabel(popup, text=f"Due Date: {task['due_date']}").pack(pady=5)
 
     def mark_task_complete(self, task):
-        self.task_list.remove(task)
+        c.execute("DELETE FROM tasks WHERE id=? AND user_id=?", (task, self.current_user[0]))
+        conn.commit()
         self.load_tasks_grid()
 
 
