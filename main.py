@@ -67,7 +67,9 @@ class App(ctk.CTk): #class for app
         self.timer_paused = False
         self.timer_id = None
         self.app_font = ctk.CTkFont(family="Inter", size=20, weight="bold")
-        self.task_list = []  
+        self.task_list = [] 
+        self.on_break = False  # Initially not on break
+ 
 
 
 
@@ -90,6 +92,7 @@ class App(ctk.CTk): #class for app
 
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=home_icon),text="Home", command=self.home, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=pomodoro_icon),text="Pomodoro", command=self.build_pomodoro, fg_color="white", text_color="black").pack(pady=5)
+
       ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)  
       ctk.CTkButton(self.sidebar, text="Tasks", command=self.build_tasks_page, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
@@ -274,6 +277,9 @@ class App(ctk.CTk): #class for app
         center_frame.place(relx=0.5, rely=0.5, anchor="center")  # Center the frame
 
         ctk.CTkLabel(center_frame, text="Pomodoro Timer", font=ctk.CTkFont(size=18)).pack(pady=10)
+        
+        self.session_label = ctk.CTkLabel(center_frame, text="Work Session", font=ctk.CTkFont(size=18))
+        self.session_label.pack(pady=5)
 
         self.timer_label = ctk.CTkLabel(center_frame, text="25:00", font=ctk.CTkFont(size=36), width=400)
         self.timer_label.pack(pady=20)
@@ -320,7 +326,18 @@ class App(ctk.CTk): #class for app
                 self.timer_id = self.after(1000, self.update_timer)
             else:
                 self.timer_running = False
-
+                if not self.on_break:
+                    # Work session just finished, start break
+                    self.on_break = True
+                    self.timer_seconds = 5 * 60  # 5-minute break
+                    self.timer_label.configure(text="Break Time!", text_color="green")
+                    self.start_timer()  # Automatically start break
+                else:
+                    # Break finished, go back to work session
+                    self.on_break = False
+                    self.timer_seconds = 25 * 60  # 25-minute session again
+                    self.timer_label.configure(text="Work Time!", text_color="blue")
+                    self.start_timer()
     #reset timer function
     def reset_timer(self):
         if self.timer_id:
@@ -409,13 +426,9 @@ class App(ctk.CTk): #class for app
 
       self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame)
       self.tasks_frame.pack(fill="both", expand=True, padx=20, pady=20)
-      
-      ctk.CTkLabel(self.tasks_frame, text="📋 Your Tasks", font=ctk.CTkFont(size=24, weight="bold")).grid(
-      row=0, column=0, columnspan=4, sticky="w", padx=10, pady=(10, 5)
-)
 
       task_header = ctk.CTkFrame(self.tasks_frame, fg_color="transparent")
-      task_header.grid(row=1, column=0, columnspan=4, sticky="ew")
+      task_header.grid(row=0, column=0, columnspan=4, sticky="ew")
       ctk.CTkButton(task_header, text="Add Subject", command=self.add_subject_popup, fg_color="#4B0082").pack(side="left", padx=10)
       ctk.CTkButton(task_header, text="New Task", command=self.add_task_popup, fg_color="#4B0082").pack(side="right", padx=10)
 
@@ -472,6 +485,7 @@ class App(ctk.CTk): #class for app
         name_entry.pack(pady=5)
 
         ctk.CTkLabel(popup, text="Subject").pack(pady=5)
+        
         subject_combobox = ctk.CTkComboBox(popup, values=getattr(self, 'subjects', []))
         subject_combobox.pack(pady=5)
 
