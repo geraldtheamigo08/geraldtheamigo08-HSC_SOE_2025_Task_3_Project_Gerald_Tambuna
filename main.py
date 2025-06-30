@@ -434,6 +434,16 @@ class App(ctk.CTk): #class for app
                                     command=lambda tid=task_id: self.show_task_details(tid))
             view_btn.pack(pady=(5, 10))
 
+            delete_btn = ctk.CTkButton(
+                task_frame,
+                text="Delete",
+                fg_color="red",
+                text_color="white",
+                hover_color="#8B0000",
+                command=lambda tid=task_id: self.delete_task(tid)
+            )
+            delete_btn.pack(pady=(0, 10))
+
     def open_new_task_popup(self):
         popup = ctk.CTkToplevel(self)
         popup.title("New Task")
@@ -490,6 +500,10 @@ class App(ctk.CTk): #class for app
             detail_box.configure(state="disabled")
             detail_box.pack(pady=5)
 
+    def delete_task(self, task_id):
+        c.execute("DELETE FROM tasks WHERE id=? AND user_id=?", (task_id, self.current_user[0]))
+        conn.commit()
+        self.build_tasks_page()  # Refresh the page after deletion
 
 
 
