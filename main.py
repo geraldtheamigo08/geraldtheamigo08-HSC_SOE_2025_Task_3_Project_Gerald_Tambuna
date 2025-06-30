@@ -465,6 +465,15 @@ class App(ctk.CTk): #class for app
         details_entry = ctk.CTkTextbox(popup, height=100)
         details_entry.pack(pady=5)
 
+        popup = ctk.CTkToplevel(self)
+        popup.title("Add Subject")
+        popup.geometry("300x200")
+
+
+        popup.transient(self)     # Makes the popup stay on top of the parent window
+        popup.grab_set()          # Prevents interaction with the main window until closed
+        popup.focus_force()       # Brings the popup into focus
+
         def save_task():
             name = name_entry.get()
             subject = subject_entry.get()
