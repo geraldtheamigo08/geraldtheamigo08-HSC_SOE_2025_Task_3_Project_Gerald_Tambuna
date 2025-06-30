@@ -90,7 +90,6 @@ class App(ctk.CTk): #class for app
 
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=home_icon),text="Home", command=self.home, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=pomodoro_icon),text="Pomodoro", command=self.build_pomodoro, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=flash_cards_icon),text="Flashcards", command=self.build_flashcards, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)  
       ctk.CTkButton(self.sidebar, text="Tasks", command=self.build_tasks_page, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
@@ -410,9 +409,13 @@ class App(ctk.CTk): #class for app
 
       self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame)
       self.tasks_frame.pack(fill="both", expand=True, padx=20, pady=20)
+      
+      ctk.CTkLabel(self.tasks_frame, text="📋 Your Tasks", font=ctk.CTkFont(size=24, weight="bold")).grid(
+      row=0, column=0, columnspan=4, sticky="w", padx=10, pady=(10, 5)
+)
 
       task_header = ctk.CTkFrame(self.tasks_frame, fg_color="transparent")
-      task_header.grid(row=0, column=0, columnspan=4, sticky="ew")
+      task_header.grid(row=1, column=0, columnspan=4, sticky="ew")
       ctk.CTkButton(task_header, text="Add Subject", command=self.add_subject_popup, fg_color="#4B0082").pack(side="left", padx=10)
       ctk.CTkButton(task_header, text="New Task", command=self.add_task_popup, fg_color="#4B0082").pack(side="right", padx=10)
 
