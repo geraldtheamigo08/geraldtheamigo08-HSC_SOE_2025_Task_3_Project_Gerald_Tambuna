@@ -395,7 +395,7 @@ class App(ctk.CTk): #class for app
         center_frame.place(relx=0.5, rely=0.5, anchor="center")  # Center the frame
         center_frame.pack_propagate(False)
 
-        ctk.CTkLabel(center_frame, text="Pomodoro Timer", font=ctk.CTkFont(size=18)).pack(pady=10)
+        ctk.CTkLabel(center_frame, text="Pomodoro Timer", font=ctk.CTkFont(size=40)).pack(pady=10)
         
         self.session_label = ctk.CTkLabel(center_frame, text="Work Session", font=ctk.CTkFont(size=18))
         self.session_label.pack(pady=5)
@@ -545,11 +545,11 @@ class App(ctk.CTk): #class for app
     def build_tasks_page(self):
       for widget in self.content_frame.winfo_children():
         widget.destroy()
-
-      self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame)
+      
+      self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame, fg_color="#4B0082")
       self.tasks_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-      task_header = ctk.CTkFrame(self.tasks_frame, fg_color="transparent")
+      task_header = ctk.CTkFrame(self.tasks_frame, fg_color="#4B0082")
       task_header.grid(row=0, column=0, columnspan=4, sticky="ew")
       ctk.CTkButton(task_header, text="Add Subject", command=self.add_subject_popup, fg_color="#4B0082").pack(side="left", padx=10)
       ctk.CTkButton(task_header, text="New Task", command=self.add_task_popup, fg_color="#4B0082").pack(side="right", padx=10)
@@ -567,12 +567,13 @@ class App(ctk.CTk): #class for app
 
         for idx, task in enumerate(tasks):
             task_id, name, subject, due_date = task
-            frame = ctk.CTkFrame(self.tasks_frame, border_width=1, corner_radius=10)
+            frame = ctk.CTkFrame(self.tasks_frame, border_width=1, corner_radius=10, width=300, height=150)
             frame.grid(row=(idx // 2) + 1, column=idx % 2, padx=10, pady=10, sticky="nsew")
+            frame.grid_propagate(False)
 
-            ctk.CTkLabel(frame, text=f"Name: {name}").pack(anchor="w", padx=10, pady=2)
-            ctk.CTkLabel(frame, text=f"Subject: {subject}").pack(anchor="w", padx=10, pady=2)
-            ctk.CTkLabel(frame, text=f"Due: {due_date}").pack(anchor="w", padx=10, pady=2)
+            ctk.CTkLabel(frame, text=f"Name: {name}", wraplength=280).pack(anchor="w", padx=10, pady=2)
+            ctk.CTkLabel(frame, text=f"Subject: {subject}", wraplength=280).pack(anchor="w", padx=10, pady=2)
+            ctk.CTkLabel(frame, text=f"Due: {due_date}", wraplength=280).pack(anchor="w", padx=10, pady=2)
 
             ctk.CTkButton(frame, text="View Task", command=lambda n=name, s=subject, d=due_date: self.view_task_popup({'name': n, 'subject': s, 'due_date': d}), fg_color="#4B0082").pack(pady=4)
 
