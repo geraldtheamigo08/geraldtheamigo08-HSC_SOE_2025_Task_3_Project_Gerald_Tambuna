@@ -384,28 +384,36 @@ class App(ctk.CTk): #class for app
     def build_pomodoro(self):
         for widget in self.content_frame.winfo_children():
             widget.destroy()
+        
+        bg_frame = ctk.CTkFrame(self.content_frame, 
+                                fg_color="#4B0082")
+        bg_frame.pack(fill="both", expand=True)
 
         # Create a centered frame for all pomodoro elements
-        center_frame = ctk.CTkFrame(self.content_frame)
+        center_frame = ctk.CTkFrame(bg_frame, width=700, height=500)
         center_frame.place(relx=0.5, rely=0.5, anchor="center")  # Center the frame
+        center_frame.pack_propagate(False)
 
         ctk.CTkLabel(center_frame, text="Pomodoro Timer", font=ctk.CTkFont(size=18)).pack(pady=10)
         
         self.session_label = ctk.CTkLabel(center_frame, text="Work Session", font=ctk.CTkFont(size=18))
         self.session_label.pack(pady=5)
 
-        self.timer_label = ctk.CTkLabel(center_frame, text="25:00", font=ctk.CTkFont(size=36), width=400)
+        self.timer_label = ctk.CTkLabel(center_frame, text="25:00", font=ctk.CTkFont(size=100), width=400)
         self.timer_label.pack(pady=20)
 
-        self.start_button = ctk.CTkButton(center_frame, text="Start", command=self.start_timer)
-        self.start_button.pack(pady=5)
+        # Create a horizontal frame for the buttons
+        button_row = ctk.CTkFrame(center_frame, fg_color="transparent")
+        button_row.pack(pady=10)
 
-        self.pause_button = ctk.CTkButton(center_frame, text="Pause", command=self.pause_timer)
-        self.pause_button.pack(pady=5)
+        self.start_button = ctk.CTkButton(button_row, text="Start", command=self.start_timer, width=100)
+        self.start_button.pack(side="left", padx=5)
 
-        self.reset_button = ctk.CTkButton(center_frame, text="Reset", command=self.reset_timer)
-        self.reset_button.pack(pady=5)
+        self.pause_button = ctk.CTkButton(button_row, text="Pause", command=self.pause_timer, width=100)
+        self.pause_button.pack(side="left", padx=5)
 
+        self.reset_button = ctk.CTkButton(button_row, text="Reset", command=self.reset_timer, width=100)
+        self.reset_button.pack(side="left", padx=5)
 
     #time format using f string
     def format_time(self, seconds):
