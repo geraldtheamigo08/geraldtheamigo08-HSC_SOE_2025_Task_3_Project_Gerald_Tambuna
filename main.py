@@ -5,6 +5,7 @@ import hashlib
 from PIL import Image
 from tkcalendar import DateEntry
 import tkinter as tk
+from datetime import datetime
 
 #---define images section---
 home_icon = Image.open("icons/home_icon.png") #home icon image
@@ -37,7 +38,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS notes (
                 FOREIGN KEY(user_id) REFERENCES users(id))''') #user_id becomes a foreign key in notes
 
 
-
+#Create tasks table
 c.execute('''CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY,
     user_id INTEGER,
@@ -248,8 +249,74 @@ class App(ctk.CTk): #class for app
         for widget in self.content_frame.winfo_children():
             widget.destroy()
 
-        ctk.CTkLabel(self.content_frame, text=f"Welcome, {self.current_user[2]}", font=ctk.CTkFont(size=18)).pack(pady=5)
+        bg_frame = ctk.CTkFrame(self.content_frame, 
+                                fg_color="#4B0082")
+        bg_frame.pack(fill="both", expand=True)
 
+        ctk.CTkLabel(bg_frame, text=f"Welcome, {self.current_user[2]}", font=ctk.CTkFont(size=18, weight="bold"), text_color="white").pack(pady=20)
+        
+        overview_frame = ctk.CTkFrame(bg_frame, fg_color="#3A0066")
+        overview_frame.pack(pady=10)
+
+        ctk.CTkLabel(overview_frame, 
+                     text="Today's Overview",
+                     font=ctk.CTkFont(size=22, weight="bold"), 
+                     text_color="white").pack(pady=10)
+        
+        
+        # Grid for tiles
+        tiles_frame = ctk.CTkFrame(overview_frame,
+                                   fg_color="transparent")
+        tiles_frame.pack(padx=20,pady=10)
+        tiles_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+
+
+        tasks_today = self.get_tasks_due_today()
+        task_tile = self.create_summary_tile(tiles_frame, "Tasks Today", 
+                                              str(tasks_today), 
+                                              "#FF69B4")
+        task_tile.grid(row=0, column=0, padx=15, pady=10)
+
+        note_count = self.get_notes_count()
+        note_tile = self.create_summary_tile(tiles_frame, "Notes",
+                                             str(note_count),
+                                             "#FFD700")
+        note_tile.grid(row=0, column=1, padx=15, pady=10)
+
+        pomodoros_today = self.get_pomodoro_count()
+        pomodoro_tile = self.create_summary_tile(tiles_frame,
+                                                 str(pomodoros_today),
+                                                 "2",
+                                                 "#90EE90")
+        pomodoro_tile.grid(row=0, column=3, padx=15, pady=10)
+
+       
+    def create_summary_tile(self, parent, title, value, color):
+        tile = ctk.CTkFrame(parent, 
+                            width=150, 
+                            height=100, 
+                            fg_color=color,
+                            corner_radius=12)
+        tile.pack_propagate(False)
+        ctk.CTkLabel(tile, text=title, font=ctk.CTkFont(size=14, weight="bold"), text_color="black").pack(pady=(8, 0))
+        ctk.CTkLabel(tile, text=value, font=ctk.CTkFont(size=26, weight="bold"), text_color="black").pack()
+        return tile
+    
+    def get_tasks_due_today(self):
+        today = datetime.now().strftime("%Y-%m-%d")
+        c.execute("SELECT COUNT(*) FROM tasks WHERE user_id=? AND due_date=?", (self.current_user[0], today))
+        result = c.fetchone()
+        return result[0] if result else 0
+    
+    def get_pomodoro_count(self):
+        return 2
+
+
+    def get_notes_count(self):
+        c.execute("SELECT COUNT(*) FROM notes WHERE user_id=?", (self.current_user[0],))
+        result = c.fetchone
+        return result[0] if result else 0          
         
     
  #login event function
