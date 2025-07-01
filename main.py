@@ -16,6 +16,7 @@ tasks_icon=Image.open("icons/tasks_icon.png")
 notes_icon=Image.open("icons/notes_icon.png")
 logout_icon=Image.open("icons/logout_icon.png")
 task_complete_icon=Image.open("icons/task_complete_icon.png")
+delete_icon=Image.open("icons/trash_icon.png")
 
 ctk.set_appearance_mode("Light") #sets the appearance mode
 ctk.set_default_color_theme("themes/purple.json") #sets the default colour theme from purple.json file
@@ -543,7 +544,7 @@ class App(ctk.CTk): #class for app
             note_row = ctk.CTkFrame(self.notes_frame)
             note_row.pack(fill="x", padx=10, pady=3)
             ctk.CTkLabel(note_row, text=data, wraplength=350).pack(side="left", fill="x", expand=True)
-            ctk.CTkButton(note_row, text="Delete", width=70, command=lambda nid=note_id: self.delete_note(nid)).pack(side="right", padx=5)
+            ctk.CTkButton(note_row, image=ctk.CTkImage(light_image=delete_icon),text="Delete", width=70, command=lambda nid=note_id: self.delete_note(nid)).pack(side="right", padx=5)
    
     def delete_note(self, note_id): #delete function, deletes notes
         c.execute("DELETE FROM notes WHERE id=? AND user_id=?", (note_id, self.current_user[0]))
@@ -560,6 +561,10 @@ class App(ctk.CTk): #class for app
       for widget in self.content_frame.winfo_children():
         widget.destroy()
       
+      ctk.CTkLabel(self.content_frame, text="My Tasks", 
+             font=ctk.CTkFont(size=22, weight="bold"), 
+             text_color="#4B0082").pack(pady=(10, 0))
+
       self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame, fg_color="#4B0082")
       self.tasks_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
