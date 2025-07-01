@@ -310,6 +310,7 @@ class App(ctk.CTk): #class for app
                      font=ctk.CTkFont(size=22, weight="bold"), 
                      text_color="white").pack(pady=10)
         
+
         
         # Grid for tiles
         tiles_frame = ctk.CTkFrame(overview_frame,
@@ -318,27 +319,40 @@ class App(ctk.CTk): #class for app
         tiles_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
 
-
         tasks_today = self.get_tasks_due_today()
         task_tile = self.create_summary_tile(tiles_frame, "Tasks Today", 
                                               str(tasks_today), 
                                               "#FF69B4")
         task_tile.grid(row=0, column=0, padx=15, pady=10)
 
-        note_count = self.get_notes_count()
-        note_tile = self.create_summary_tile(tiles_frame, "Notes",
-                                             str(note_count),
-                                             "#FFD700")
-        note_tile.grid(row=0, column=1, padx=15, pady=10)
+        #upcoming tasks frame
+        upcoming_frame = ctk.CTkFrame(bg_frame, fg_color="white")
+        upcoming_frame.pack(pady=20, padx=20, fill="x")
 
-        pomodoros_today = self.get_pomodoro_count()
-        pomodoro_tile = self.create_summary_tile(tiles_frame,
-                                                 str(pomodoros_today),
-                                                 "2",
-                                                 "#90EE90")
-        pomodoro_tile.grid(row=0, column=3, padx=15, pady=10)
+        ctk.CTkLabel(upcoming_frame, text="Upcoming Tasks (Next 2 Weeks)",
+                    font=ctk.CTkFont(size=18, weight="bold"), text_color="black").pack(anchor="w", padx=10, pady=(10, 5))
 
-       
+        tasks = self.get_upcoming_tasks()
+        if tasks:
+            for name, subject, due_date in tasks:
+                ctk.CTkLabel(upcoming_frame,
+                            text=f"{name} | {subject} | Due: {due_date}",
+                            text_color="black", anchor="w",
+                            font=ctk.CTkFont(size=14)).pack(anchor="w", padx=15, pady=2)
+        else:
+            ctk.CTkLabel(upcoming_frame,
+                        text="No upcoming tasks!",
+                        text_color="gray", anchor="w").pack(anchor="w", padx=15, pady=5)
+
+
+    def get_upcoming_tasks(self):
+        from datetime import datetime, timedelta
+        today = datetime.now().date()
+        two_weeks = today + timedelta(days=14)
+        c.execute("SELECT name, subject, due_date FROM tasks WHERE user_id=? AND due_date BETWEEN ? AND ?",
+                (self.current_user[0], today.isoformat(), two_weeks.isoformat()))
+        return c.fetchall()
+
     def create_summary_tile(self, parent, title, value, color):
         tile = ctk.CTkFrame(parent, 
                             width=150, 
