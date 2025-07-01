@@ -87,18 +87,45 @@ class App(ctk.CTk): #class for app
     def build_logged_in_layout(self):
       self.clear_widgets()
     
-      # Sidebar menu
+      # Sidebar menu when user is logged in
       self.sidebar = ctk.CTkFrame(self, width=120, fg_color="white")
       self.sidebar.pack(side="left", fill="y")
       
 
       ctk.CTkLabel(self.sidebar, text="Menu", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(10, 5))
 
-      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=home_icon),text="Home", command=self.home, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=pomodoro_icon),text="Pomodoro", command=self.build_pomodoro, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=notes_icon), text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)  
-      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=tasks_icon),text="Tasks", command=self.build_tasks_page, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=logout_icon),text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
+      #Pages
+      #Put each page button in its own frame
+      home_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+      home_frame.pack(fill="x", pady=5, padx=5)
+      ctk.CTkButton(home_frame, image=ctk.CTkImage(light_image=home_icon),text="Home", 
+                    command=self.home, fg_color="white", text_color="black", 
+                    anchor="w", compound="left").pack(pady=5)
+
+      pomodoro_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+      pomodoro_frame.pack(fill="x", pady=5, padx=5)
+      ctk.CTkButton(pomodoro_frame, image=ctk.CTkImage(light_image=pomodoro_icon),
+                    text="Pomodoro", command=self.build_pomodoro, fg_color="white", 
+                    text_color="black", anchor="w", compound="left").pack(pady=5)
+      
+      notes_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+      notes_frame.pack(fill="x", pady=5, padx=5)
+      ctk.CTkButton(notes_frame, image=ctk.CTkImage(light_image=notes_icon), text="Notes", 
+                    command=self.build_notes, fg_color="white", text_color="black",
+                    anchor="w", compound="left").pack(pady=5)  
+      
+      tasks_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+      tasks_frame.pack(fill="x", pady=5, padx=5)
+      ctk.CTkButton(tasks_frame, image=ctk.CTkImage(light_image=tasks_icon),
+                    text="Tasks", command=self.build_tasks_page, fg_color="white", 
+                    text_color="black", anchor="w", compound="left").pack(pady=5)
+       
+
+      logout_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
+      logout_frame.pack(fill="x", pady=5, padx=5)
+      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=logout_icon),
+                    text="Logout", command=self.logout, fg_color="white", 
+                    text_color="black", anchor="w", compound="left").pack(pady=5)
 
       # Content frame
       self.content_frame = ctk.CTkFrame(self)
