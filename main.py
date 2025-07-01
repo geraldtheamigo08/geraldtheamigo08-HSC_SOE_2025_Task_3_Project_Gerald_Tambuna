@@ -1,4 +1,4 @@
-
+#import libraries and modules
 import customtkinter as ctk
 import sqlite3
 import hashlib
@@ -33,7 +33,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS users (
 #Creates notes table, storing user info and the notes they types
 
 
-
+#notes table
 c.execute('''CREATE TABLE IF NOT EXISTS notes (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER,
@@ -76,58 +76,73 @@ class App(ctk.CTk): #class for app
  
 
 
-
+    #function that clears all widgets on a page
     def clear_widgets(self):
       for widget in self.winfo_children():
         widget.destroy()
       self.sidebar = None
       self.content_frame = None
 
-    #sidebar shown when logged in
+    #menu bar function
     def build_logged_in_layout(self):
       self.clear_widgets()
     
       # Sidebar menu when user is logged in
-      self.sidebar = ctk.CTkFrame(self, width=120, fg_color="white")
+      self.sidebar = ctk.CTkFrame(self, width=60, fg_color="white")
       self.sidebar.pack(side="left", fill="y")
       
-
       ctk.CTkLabel(self.sidebar, text="Menu", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(10, 5))
 
-      #Pages
+      #-- Page buttons --#
+
       #Put each page button in its own frame
       home_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
       home_frame.pack(fill="x", pady=5, padx=5)
+      
       ctk.CTkButton(home_frame, image=ctk.CTkImage(light_image=home_icon),text="Home", 
                     command=self.home, fg_color="white", text_color="black", 
-                    anchor="w", compound="left", hover_color="#e6e6e6").pack(pady=5)
-
+                    anchor="w", compound="left", hover_color="#e6e6e6", 
+                    ).pack(pady=5)
+     
+      #separate pomodoro frame inside sidebar
       pomodoro_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent", )
       pomodoro_frame.pack(fill="x", pady=5, padx=5)
+      
+      #pomodoro button
       ctk.CTkButton(pomodoro_frame, image=ctk.CTkImage(light_image=pomodoro_icon),
                     text="Pomodoro", command=self.build_pomodoro, fg_color="white", 
-                    text_color="black", anchor="w", compound="left", hover_color="#e6e6e6"
+                    text_color="black", anchor="w", compound="left", hover_color="#e6e6e6",
                     ).pack(pady=5)
       
+      #separate notes frame inside sidebar 
       notes_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
       notes_frame.pack(fill="x", pady=5, padx=5)
+      
+      #images button 
       ctk.CTkButton(notes_frame, image=ctk.CTkImage(light_image=notes_icon), text="Notes", 
                     command=self.build_notes, fg_color="white", text_color="black",
-                    anchor="w", compound="left", hover_color="#e6e6e6").pack(pady=5)  
+                    anchor="w", compound="left", hover_color="#e6e6e6",
+                    ).pack(pady=5)  
       
+      #separate tasks frame inside sidebar
       tasks_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
       tasks_frame.pack(fill="x", pady=5, padx=5)
+      
+      #tasks button
       ctk.CTkButton(tasks_frame, image=ctk.CTkImage(light_image=tasks_icon),
                     text="Tasks", command=self.build_tasks_page, fg_color="white", 
-                    text_color="black", anchor="w", compound="left", hover_color="#e6e6e6"
+                    text_color="black", anchor="w", compound="left", hover_color="#e6e6e6",
                     ).pack(pady=5)
        
-
+      #separate login frame inside sidebar
       logout_frame = ctk.CTkFrame(self.sidebar, fg_color="transparent")
       logout_frame.pack(fill="x", pady=5, padx=5)
+      
+      #logout button
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=logout_icon),
                     text="Logout", command=self.logout, fg_color="white", 
-                    text_color="black", anchor="w", compound="left", hover_color="#e6e6e6").pack(pady=5)
+                    text_color="black", anchor="w", compound="left", hover_color="#e6e6e6"
+                    ).pack(side="bottom",pady=20)
 
       # Content frame
       self.content_frame = ctk.CTkFrame(self)
