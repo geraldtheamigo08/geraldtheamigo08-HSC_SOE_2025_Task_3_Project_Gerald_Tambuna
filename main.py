@@ -15,6 +15,7 @@ flash_cards_icon=Image.open("icons/flash_cards_icon.png")
 tasks_icon=Image.open("icons/tasks_icon.png")
 notes_icon=Image.open("icons/notes_icon.png")
 logout_icon=Image.open("icons/logout_icon.png")
+task_complete_icon=Image.open("icons/task_complete_icon.png")
 
 ctk.set_appearance_mode("Light") #sets the appearance mode
 ctk.set_default_color_theme("themes/purple.json") #sets the default colour theme from purple.json file
@@ -101,7 +102,7 @@ class App(ctk.CTk): #class for app
       
       ctk.CTkButton(home_frame, image=ctk.CTkImage(light_image=home_icon),text="Home", 
                     command=self.home, fg_color="white", text_color="black", 
-                    anchor="w", compound="left", hover_color="#e6e6e6", 
+                    anchor="w", compound="left", hover_color="#e6e6e6"
                     ).pack(pady=5)
      
       #separate pomodoro frame inside sidebar
@@ -575,7 +576,12 @@ class App(ctk.CTk): #class for app
 
             ctk.CTkButton(frame, text="View Task", command=lambda n=name, s=subject, d=due_date: self.view_task_popup({'name': n, 'subject': s, 'due_date': d}), fg_color="#4B0082").pack(pady=4)
 
-            ctk.CTkButton(frame, text="Mark Complete", command=lambda tid=task_id: self.mark_task_complete(tid), fg_color="#4B0082").pack(pady=2)
+            ctk.CTkButton(frame, text="Mark Complete", 
+                          command=lambda tid=task_id: self.mark_task_complete(tid), 
+                          fg_color="white", border_width=1, 
+                          image=ctk.CTkImage(light_image=task_complete_icon),
+                          text_color="black",
+                          border_color="#33ff47").pack(pady=2)
 
     def add_subject_popup(self):
         popup = ctk.CTkToplevel(self)
