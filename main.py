@@ -8,10 +8,13 @@ import tkinter as tk
 from datetime import datetime
 
 #---define images section---
-home_icon = Image.open("icons/home_icon.png") #home icon image
+home_icon = Image.open("icons/house_icon.png") #home icon image
 app_logo = Image.open("images/braintain_logo.png") #app
 pomodoro_icon =Image.open("icons/stopwatch_icon.png")
 flash_cards_icon=Image.open("icons/flash_cards_icon.png")
+tasks_icon=Image.open("icons/tasks_icon.png")
+notes_icon=Image.open("icons/notes_icon.png")
+logout_icon=Image.open("icons/logout_icon.png")
 
 ctk.set_appearance_mode("Light") #sets the appearance mode
 ctk.set_default_color_theme("themes/purple.json") #sets the default colour theme from purple.json file
@@ -93,10 +96,9 @@ class App(ctk.CTk): #class for app
 
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=home_icon),text="Home", command=self.home, fg_color="white", text_color="black").pack(pady=5)
       ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=pomodoro_icon),text="Pomodoro", command=self.build_pomodoro, fg_color="white", text_color="black").pack(pady=5)
-
-      ctk.CTkButton(self.sidebar, text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)  
-      ctk.CTkButton(self.sidebar, text="Tasks", command=self.build_tasks_page, fg_color="white", text_color="black").pack(pady=5)
-      ctk.CTkButton(self.sidebar, text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=notes_icon), text="Notes", command=self.build_notes, fg_color="white", text_color="black").pack(pady=5)  
+      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=tasks_icon),text="Tasks", command=self.build_tasks_page, fg_color="white", text_color="black").pack(pady=5)
+      ctk.CTkButton(self.sidebar, image=ctk.CTkImage(light_image=logout_icon),text="Logout", command=self.logout, fg_color="white", text_color="black").pack(pady=5)
 
       # Content frame
       self.content_frame = ctk.CTkFrame(self)
