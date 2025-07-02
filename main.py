@@ -167,7 +167,8 @@ class App(ctk.CTk): #class for app
       
 
     # Inner frame centered inside the left container
-      content_frame = ctk.CTkFrame(container, fg_color="transparent", border_color="#d0d0d0", border_width=0.4, corner_radius=10)
+      content_frame = ctk.CTkFrame(container, fg_color="transparent", 
+                                   border_color="#d0d0d0", border_width=0.4, corner_radius=10)
       content_frame.place(relx=0.4, rely=0.5, anchor="center")
       content_frame.configure(fg_color="#fafafa")
       
@@ -184,37 +185,54 @@ class App(ctk.CTk): #class for app
       logo_label = ctk.CTkLabel(header_frame, image=self.logo, text="")
       logo_label.pack(side="left", padx=(0, 10))  # Logo on the left
 
-      self.app_title = ctk.CTkLabel(header_frame, text = "Braintrain", font=ctk.CTkFont(family="Huninn", size=55, weight="bold"))
+      self.app_title = ctk.CTkLabel(header_frame, text = "Braintrain", 
+                                    font=ctk.CTkFont(family="Huninn", size=55, weight="bold"))
       #self.app_title(anchor="center", padx=10, pady=(0,20))
       self.app_title.pack(side="left")
 
        
       #welcome widgets
-      self.label = ctk.CTkLabel(innercont_frame, text="Login", font=ctk.CTkFont(family="Calibri", size=40, weight="normal"))
+      self.label = ctk.CTkLabel(innercont_frame, text="Login", 
+                                font=ctk.CTkFont(family="Calibri", size=40, weight="normal"))
       self.label.pack(anchor="center", padx=10, pady=(0, 20))
 
-      self.greeting = ctk.CTkLabel(innercont_frame, text="Hi there, 👋 Welcome!", font=ctk.CTkFont(family="Calibri", size=18))
+      self.greeting = ctk.CTkLabel(innercont_frame, text="Hi there, 👋 Welcome!", 
+                                   font=ctk.CTkFont(family="Calibri", size=18))
       self.greeting.pack(anchor="center", padx=10, pady=(0, 20))
       
       #email widgets
-      self.email_label= ctk.CTkLabel(innercont_frame,text="Email", font=ctk.CTkFont(family="Calibri", size=16, weight="bold"), text_color="black",)
+      self.email_label= ctk.CTkLabel(innercont_frame,text="Email", 
+                                     font=ctk.CTkFont(family="Calibri", size=16, weight="bold"), 
+                                     text_color="black",)
       self.email_label.pack(pady=0, anchor="w")
 
-      self.email_entry = ctk.CTkEntry(innercont_frame, placeholder_text="", width=400, height=50, fg_color="#F6E9FF", border_color="black", border_width=0.5, font=ctk.CTkFont(family="Calibri", size=16))
+      self.email_entry = ctk.CTkEntry(innercont_frame, placeholder_text="", 
+                                      width=400, height=50, fg_color="#F6E9FF", 
+                                      border_color="black", border_width=0.5, 
+                                      font=ctk.CTkFont(family="Calibri", size=16))
       self.email_entry.pack(pady=10)
       
       #password widgets
-      self.password_label= ctk.CTkLabel(innercont_frame,text="Password", font=ctk.CTkFont(family="Calibri", size=16, weight="bold"), text_color="black")
+      self.password_label= ctk.CTkLabel(innercont_frame,text="Password", 
+                                        font=ctk.CTkFont(family="Calibri", size=16, weight="bold"), 
+                                        text_color="black")
       self.password_label.pack(pady=0, anchor="w")
       
 
-      self.password_entry = ctk.CTkEntry(innercont_frame, placeholder_text="", show="*", width=400, height=50, fg_color="#F6E9FF", border_color="black", border_width=0.5, font=ctk.CTkFont(family="Calibri", size=16))
+      self.password_entry = ctk.CTkEntry(innercont_frame, placeholder_text="", 
+                                         show="*", width=400, height=50, fg_color="#F6E9FF", border_color="black", border_width=0.5, font=ctk.CTkFont(family="Calibri", size=16))
       self.password_entry.pack(pady=5)
 
-      self.login_btn = ctk.CTkButton(innercont_frame, text="Login", command=self.login, width=400, height=50, fg_color="#4B0082", text_color="white", font=ctk.CTkFont(family="Calibri", size=16), hover_color="#ff1493")
+      self.login_btn = ctk.CTkButton(innercont_frame, text="Login", command=self.login, width=400, 
+                                     height=50, fg_color="#4B0082", text_color="white", 
+                                     font=ctk.CTkFont(family="Calibri", size=16), hover_color="#ff1493")
       self.login_btn.pack(pady=15)
 
-      self.signup_link = ctk.CTkButton(innercont_frame, text="Don't have an account? Sign up", command=self.build_signup, width=400, height=50, fg_color="transparent", text_color="#4B0082", font=ctk.CTkFont(family="Calibri", size=16, underline=True), hover_color="white")
+      self.signup_link = ctk.CTkButton(innercont_frame, text="Don't have an account? Sign up", 
+                                       command=self.build_signup, width=400, height=50, 
+                                       fg_color="transparent", text_color="#4B0082", 
+                                       font=ctk.CTkFont(family="Calibri", size=16, underline=True), 
+                                       hover_color="white")
       self.signup_link.pack(pady=5)
 
       self.flash_label = ctk.CTkLabel(innercont_frame, text="")
@@ -472,6 +490,7 @@ class App(ctk.CTk): #class for app
                 self.timer_label.configure(text=self.format_time(self.timer_seconds))
                 self.timer_seconds -= 1
                 self.timer_id = self.after(1000, self.update_timer)
+            
             else:
                 self.timer_running = False
                 if not self.on_break:
