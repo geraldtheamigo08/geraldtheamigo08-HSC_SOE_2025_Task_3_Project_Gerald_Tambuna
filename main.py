@@ -228,32 +228,12 @@ class App(ctk.CTk): #class for app
 
       bg_label = ctk.CTkLabel(right_panel, image=self.bg, text="")
       bg_label.pack()  # Logo on the left
-      
-
-    def build_flashcards(self):
-        for widget in self.content_frame.winfo_children():
-          widget.destroy()
-
-        ctk.CTkLabel(self.content_frame, text=f"Welcome, {self.current_user[2]}", font=ctk.CTkFont(size=18)).pack(pady=5)
-
-        self.note_entry = ctk.CTkTextbox(self.content_frame, height=100, width=400)
-        self.note_entry.pack(pady=10)
-
-        self.add_btn = ctk.CTkButton(self.content_frame, text="Add Note", command=self.add_note)
-        self.add_btn.pack(pady=5)
-
-        self.notes_frame = ctk.CTkFrame(self.content_frame)
-        self.notes_frame.pack(pady=10, fill="both", expand=True)
-      
-      
-     
+       
       
     #signup page function
     def build_signup(self): 
         self.clear_widgets()
-    
-    
-        
+
         gradient_bg = Image.open("images/braintain_gradient_bg.png")
         self.signup_bg=ctk.CTkImage(light_image=gradient_bg,
                                     size=(self.winfo_screenwidth(),
@@ -419,7 +399,6 @@ class App(ctk.CTk): #class for app
           self.home()
         else: #if credentials are invalid, this message is flashed
           self.flash("Invalid login credentials") 
-    
 
     #pomodoro timer   
     def build_pomodoro(self):
@@ -439,7 +418,7 @@ class App(ctk.CTk): #class for app
         
         self.session_label = ctk.CTkLabel(center_frame, text="Work Session", font=ctk.CTkFont(size=18))
         self.session_label.pack(pady=5)
-
+        
         self.timer_label = ctk.CTkLabel(center_frame, text="25:00", font=ctk.CTkFont(size=100), width=400)
         self.timer_label.pack(pady=20)
 
@@ -509,16 +488,9 @@ class App(ctk.CTk): #class for app
         self.timer_seconds = 25 * 60 #converts 25 minutes to seconds
         self.timer_label.configure(text="25:00") #sets timer to 25 minutes when reset button is hit
 
-
-
-
-
-
-
     def flash(self, msg, color="red"):
         self.flash_label.configure(text=msg, text_color=color)
 
-   
     #signing up event function
     def signup(self):
         email = self.email_entry.get()
@@ -703,10 +675,6 @@ class App(ctk.CTk): #class for app
         c.execute("DELETE FROM tasks WHERE id=? AND user_id=?", (task, self.current_user[0]))
         conn.commit()
         self.load_tasks_grid()
-
-
-
-
 
 #runs the app continuouslyu
 if __name__ == "__main__":
