@@ -62,7 +62,7 @@ def hash_password(password): #hashing function: encrypts passwords from plaintex
 class App(ctk.CTk): #class for app
     def __init__(self):
         super().__init__()
-        self.title("Braintain")
+        self.title("Braintrain")
         self.after(100, lambda: self.state('zoomed'))
 
         self.current_user = None
