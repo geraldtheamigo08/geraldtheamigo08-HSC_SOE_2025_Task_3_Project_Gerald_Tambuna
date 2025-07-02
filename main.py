@@ -17,6 +17,7 @@ notes_icon=Image.open("icons/notes_icon.png")
 logout_icon=Image.open("icons/logout_icon.png")
 task_complete_icon=Image.open("icons/task_complete_icon.png")
 delete_icon=Image.open("icons/trash_icon.png")
+add_icon=Image.open("icons/add_icon.png")
 
 ctk.set_appearance_mode("Light") #sets the appearance mode
 ctk.set_default_color_theme("themes/purple.json") #sets the default colour theme from purple.json file
@@ -284,7 +285,7 @@ class App(ctk.CTk): #class for app
       for widget in self.content_frame.winfo_children():
         widget.destroy()
 
-      ctk.CTkLabel(self.content_frame, text=f"Welcome, {self.current_user[2]}", font=ctk.CTkFont(size=18)).pack(pady=5)
+      ctk.CTkLabel(self.content_frame, text="My Notes", font=ctk.CTkFont(size=50, weight="bold")).pack(pady=5)
 
       self.note_entry = ctk.CTkTextbox(self.content_frame, height=100, width=400)
       self.note_entry.pack(pady=10)
@@ -414,16 +415,22 @@ class App(ctk.CTk): #class for app
         center_frame.place(relx=0.5, rely=0.5, anchor="center")  # Center the frame
         center_frame.pack_propagate(False)
 
-        ctk.CTkLabel(center_frame, text="Pomodoro Timer", font=ctk.CTkFont(size=40)).pack(pady=10)
+        # Inner content wrapper to center elements vertically and horizontally
+        content_wrapper = ctk.CTkFrame(center_frame, fg_color="transparent")
+        content_wrapper.pack(expand=True)  # Vertically center the wrapper
+
+
+        ctk.CTkLabel(content_wrapper, text="Pomodoro Timer", font=ctk.CTkFont(size=50, weight="bold")).pack(pady=10)
         
-        self.session_label = ctk.CTkLabel(center_frame, text="Work Session", font=ctk.CTkFont(size=18))
+        self.session_label = ctk.CTkLabel(content_wrapper, text="Work Session", font=ctk.CTkFont(size=18))
         self.session_label.pack(pady=5)
         
-        self.timer_label = ctk.CTkLabel(center_frame, text="25:00", font=ctk.CTkFont(size=100), width=400)
+        self.timer_label = ctk.CTkLabel(content_wrapper, text="25:00", font=ctk.CTkFont(size=100), width=400,
+                                        )
         self.timer_label.pack(pady=20)
 
         # Create a horizontal frame for the buttons
-        button_row = ctk.CTkFrame(center_frame, fg_color="transparent")
+        button_row = ctk.CTkFrame(content_wrapper, fg_color="transparent")
         button_row.pack(pady=10)
 
         self.start_button = ctk.CTkButton(button_row, text="Start", command=self.start_timer, width=100)
@@ -471,14 +478,15 @@ class App(ctk.CTk): #class for app
                     # Work session just finished, start break
                     self.on_break = True
                     self.timer_seconds = 5 * 60  # 5-minute break
-                    self.timer_label.configure(text="Break Time!", text_color="green")
+                    self.session_label.configure(text="Break Time!", text_color="green")
                     self.start_timer()  # Automatically start break
                 else:
                     # Break finished, go back to work session
                     self.on_break = False
                     self.timer_seconds = 25 * 60  # 25-minute session again
-                    self.timer_label.configure(text="Work Time!", text_color="blue")
+                    self.session_label.configure(text="Work Time!", text_color="blue")
                     self.start_timer()
+
     #reset timer function
     def reset_timer(self):
         if self.timer_id:
@@ -559,16 +567,23 @@ class App(ctk.CTk): #class for app
         widget.destroy()
       
       ctk.CTkLabel(self.content_frame, text="My Tasks", 
-             font=ctk.CTkFont(size=22, weight="bold"), 
-             text_color="#4B0082").pack(pady=(10, 0))
+             font=ctk.CTkFont(size=50, weight="bold"), 
+             text_color="black").pack(pady=(10, 0))
 
       self.tasks_frame = ctk.CTkScrollableFrame(self.content_frame, fg_color="#4B0082")
       self.tasks_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
       task_header = ctk.CTkFrame(self.tasks_frame, fg_color="#4B0082")
       task_header.grid(row=0, column=0, columnspan=4, sticky="ew")
-      ctk.CTkButton(task_header, text="Add Subject", command=self.add_subject_popup, fg_color="#4B0082").pack(side="left", padx=10)
-      ctk.CTkButton(task_header, text="New Task", command=self.add_task_popup, fg_color="#4B0082").pack(side="right", padx=10)
+      ctk.CTkButton(task_header, text="Add Subject", command=self.add_subject_popup, 
+                    fg_color="#FF69B4", text_color="black",
+                    image=ctk.CTkImage(light_image=add_icon),
+                    hover_color="none").pack(side="left", padx=10)
+      
+      ctk.CTkButton(task_header, text="New Task", command=self.add_task_popup, 
+                    fg_color="#FF69B4", text_color="black",
+                    image=ctk.CTkImage(light_image=add_icon),
+                    hover_color="none").pack(side="right", padx=10)
 
       self.load_tasks_grid()
 
@@ -591,14 +606,15 @@ class App(ctk.CTk): #class for app
             ctk.CTkLabel(frame, text=f"Subject: {subject}", wraplength=280).pack(anchor="w", padx=10, pady=2)
             ctk.CTkLabel(frame, text=f"Due: {due_date}", wraplength=280).pack(anchor="w", padx=10, pady=2)
 
-            ctk.CTkButton(frame, text="View Task", command=lambda n=name, s=subject, d=due_date: self.view_task_popup({'name': n, 'subject': s, 'due_date': d}), fg_color="#4B0082").pack(pady=4)
+            
 
             ctk.CTkButton(frame, text="Mark Complete", 
                           command=lambda tid=task_id: self.mark_task_complete(tid), 
-                          fg_color="white", border_width=1, 
+                          fg_color="green", border_width=1, 
                           image=ctk.CTkImage(light_image=task_complete_icon),
-                          text_color="black",
-                          border_color="#33ff47").pack(pady=2)
+                          text_color="white",
+                          border_color="green",
+                          hover_color="none").pack(pady=2)
 
     def add_subject_popup(self):
         popup = ctk.CTkToplevel(self)
