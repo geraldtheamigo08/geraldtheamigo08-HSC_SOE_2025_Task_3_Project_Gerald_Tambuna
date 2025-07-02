@@ -251,26 +251,51 @@ class App(ctk.CTk): #class for app
     #signup page function
     def build_signup(self): 
         self.clear_widgets()
-        self.label = ctk.CTkLabel(self, text="Sign Up", font=ctk.CTkFont(size=20, weight="bold"))
+    
+    
+        
+        gradient_bg = Image.open("images/braintain_gradient_bg.png")
+        self.signup_bg=ctk.CTkImage(light_image=gradient_bg,
+                                    size=(self.winfo_screenwidth(),
+                                          self.winfo_screenheight()))
+        bg_label = ctk.CTkLabel(self, image=self.signup_bg, text="")
+        bg_label.place(relx=0, rely=0, relwidth=1, relheight=1)
+        
+        wrapper_frame = ctk.CTkFrame(self, fg_color="#F6E9FF")
+        wrapper_frame.place(relx=0.5, rely=0.5, anchor="center")
+        
+        main_frame=ctk.CTkFrame(wrapper_frame, 
+                                fg_color="white", 
+                                width=350, 
+                                height=500, 
+                                corner_radius=20,
+                                ) 
+        main_frame.pack()
+        main_frame.pack_propagate(False)
+        
+        inner_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        inner_frame.place(relx=0.5, rely=0.5, anchor="center")  # Center inside main_frame
+
+        self.label = ctk.CTkLabel(inner_frame, text="Sign Up", font=ctk.CTkFont(size=30, weight="bold"))
         self.label.pack(pady=10)
         
         #text entries
-        self.email_entry = ctk.CTkEntry(self, placeholder_text="Email")
-        self.email_entry.pack(pady=5)
-        self.name_entry = ctk.CTkEntry(self, placeholder_text="First Name")
-        self.name_entry.pack(pady=5)
-        self.password1 = ctk.CTkEntry(self, placeholder_text="Password", show="*")
-        self.password1.pack(pady=5)
-        self.password2 = ctk.CTkEntry(self, placeholder_text="Confirm Password", show="*")
-        self.password2.pack(pady=5)
+        self.email_entry = ctk.CTkEntry(inner_frame, placeholder_text="Email")
+        self.email_entry.pack(pady=(20, 10))
+        self.name_entry = ctk.CTkEntry(inner_frame, placeholder_text="First Name")
+        self.name_entry.pack(pady=10)
+        self.password1 = ctk.CTkEntry(inner_frame, placeholder_text="Password", show="*")
+        self.password1.pack(pady=10)
+        self.password2 = ctk.CTkEntry(inner_frame, placeholder_text="Confirm Password", show="*")
+        self.password2.pack(pady=10)
 
-        self.signup_btn = ctk.CTkButton(self, text="Create Account", command=self.signup)
+        self.signup_btn = ctk.CTkButton(inner_frame, text="Create Account", command=self.signup)
         self.signup_btn.pack(pady=10)
 
-        self.login_link = ctk.CTkButton(self, text="Back to Login", command=self.build_login)
-        self.login_link.pack(pady=5)
+        self.login_link = ctk.CTkButton(inner_frame, text="Back to Login", command=self.build_login)
+        self.login_link.pack(pady=10)
 
-        self.flash_label = ctk.CTkLabel(self, text="")
+        self.flash_label = ctk.CTkLabel(main_frame, text="")
         self.flash_label.pack()
     
     #homepage function
@@ -587,7 +612,7 @@ class App(ctk.CTk): #class for app
         for idx, task in enumerate(tasks):
             task_id, name, subject, due_date = task
             frame = ctk.CTkFrame(self.tasks_frame, border_width=1, corner_radius=10, width=300, height=150)
-            frame.grid(row=(idx // 2) + 1, column=idx % 2, padx=10, pady=10, sticky="nsew")
+            frame.grid(row=(idx // 5) + 1, column=idx % 5, padx=10, pady=10, sticky="nsew")
             frame.grid_propagate(False)
 
             ctk.CTkLabel(frame, text=f"Name: {name}", wraplength=280).pack(anchor="w", padx=10, pady=2)
