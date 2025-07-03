@@ -242,13 +242,7 @@ class App(ctk.CTk): #class for app
       right_panel = ctk.CTkFrame(self, fg_color="#4B0082", corner_radius=0)
       right_panel.place(relx=0.4, rely=0, relwidth=0.6, relheight=1)
 
-      gradient_bg = Image.open("images/braintain_gradient_bg.png")
-      self.bg = ctk.CTkImage(light_image=gradient_bg, size= (800, 600))
-
-      bg_label = ctk.CTkLabel(right_panel, image=self.bg, text="")
-      bg_label.pack()  # Logo on the left
-       
-      
+     
     #signup page function
     def build_signup(self): 
         self.clear_widgets()
@@ -651,7 +645,8 @@ class App(ctk.CTk): #class for app
             self.subjects.append(subject_entry.get())
             popup.destroy()
 
-        ctk.CTkButton(popup, text="Save", command=save_subject, fg_color="#4B0082").pack(pady=10)
+        ctk.CTkButton(popup, text="Save", command=save_subject, 
+                      fg_color="#4B0082").pack(pady=10)
 
     def add_task_popup(self):
         popup = ctk.CTkToplevel(self)
@@ -666,6 +661,7 @@ class App(ctk.CTk): #class for app
         ctk.CTkLabel(popup, text="Subject").pack(pady=5)
         
         subject_combobox = ctk.CTkComboBox(popup, values=getattr(self, 'subjects', []))
+        subject_combobox.set("")  # Set blank by default
         subject_combobox.pack(pady=5)
 
         ctk.CTkLabel(popup, text="Due Date").pack(pady=5)
